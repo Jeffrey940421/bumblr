@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-
+import { ChatProvider } from "./context/ChatContext";
 import { ModalProvider, Modal } from "./context/Modal";
 import { NonClosingModalProvider, NonClosingModal } from "./context/NonClosingModal";
 import configureStore from "./store";
@@ -26,11 +26,13 @@ function Root() {
 		<NonClosingModalProvider>
 			<ModalProvider>
 				<Provider store={store}>
-					<BrowserRouter>
-						<NonClosingModal />
-						<App />
-						<Modal />
-					</BrowserRouter>
+					<ChatProvider>
+						<BrowserRouter>
+							<NonClosingModal />
+							<App />
+							<Modal />
+						</BrowserRouter>
+					</ChatProvider>
 				</Provider>
 			</ModalProvider>
 		</NonClosingModalProvider>

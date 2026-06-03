@@ -27,10 +27,20 @@ import RightSideNavigation from "./components/RightSideNavigation";
 import { Follow } from "./components/Follow";
 import Footer from "./components/Footer";
 import NotFound from "./components/404Page";
+import { getMessagesThunk } from "./store/message";
+import { Message } from "./components/Message";
+import { Chat } from "./components/Chat";
+import { useChat } from "./context/ChatContext";
+import { io } from 'socket.io-client';
+import { addMessage } from "./store/message";
+
+let socket
 
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isDataReady, setIsDataReady] = useState(false);
+  const { setSocket } = useChat()
 
   const user = useSelector((state) => state.session.user);
   const post = useSelector((state) => state.posts);
@@ -45,8 +55,36 @@ function App() {
   // }, [user]);
 
   useEffect(() => {
-    if (isLoaded) dispatch(getInitialStateThunk(user?.id));
+    if (isLoaded) {
+      dispatch(getInitialStateThunk(user?.id))
+        .then(() => dispatch(getMessagesThunk()))
+        .then(() => setIsDataReady(true));
+    };
   }, [dispatch, user, isLoaded]);
+
+  useEffect(() => {
+    socket = io();
+    if (isLoaded && user) {
+      socket.emit("join_room", { rooms: [`user${user.id}`] })
+      setSocket(socket)
+
+      socket.on("new_message", async (data) => {
+        const message = data
+        message.associated_user = message.sender
+        await dispatch(addMessage(message))
+      })
+
+      socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+      });
+
+      return (() => {
+        socket.off("new_message")
+        socket.disconnect()
+        setSocket(null)
+      })
+    }
+  }, [user, isLoaded])
 
   // useEffect(() => {
   //   dispatch(getUsersThunk());
@@ -97,10 +135,14 @@ function App() {
       </div> */}
       {isLoaded && (
         <Switch>
+          <Route path="/test">
+            <Message />
+          </Route>
           <Route path="/settings">
             <AccountSetting />
           </Route>
           <Route exact path="/">
+            <>
             <div id="main-page-layout-container">
               <LeftSideNavigation />
               <div>
@@ -109,6 +151,8 @@ function App() {
               </div>
               <RightSideNavigation />
             </div>
+            {isDataReady && <Chat />}
+            </>
           </Route>
           <Route path="/login">
             <LoginFormPage />

@@ -1,0 +1,36 @@
+.chat-container {
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  background-color: white;
+  width: 500px;
+}
+
+.chat-container img {
+  width: 20px;
+  height: 20px;
+}
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  max-height: 30vh;
+  width: 100%;
+  row-gap: 20px;
+  overflow-y: scroll;
+}
+
+.chat-content {
+  display: grid;
+
+}
+
+.chat-content.received span {
+  max-width: 300px;
+  justify-self: flex-start;
+}
+
+.chat-content.sent span {
+  max-width: 300px;
+  justify-self: flex-end;
+}

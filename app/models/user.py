@@ -22,6 +22,18 @@ class User(db.Model, UserMixin):
     # Relationships
     posts = db.relationship("Post", back_populates="user", cascade="all, delete-orphan")
     comments = db.relationship("Note", back_populates="user")
+    received_messages = db.relationship(
+        "Message",
+        foreign_keys="Message.recipient_id",
+        back_populates="recipient",
+        cascade="all, delete-orphan"
+    )
+    sent_messages = db.relationship(
+        "Message",
+        foreign_keys="Message.sender_id",
+        back_populates="sender",
+        cascade="all, delete-orphan"
+    )
     likes = db.relationship(
         "Post",
         secondary="user_likes",

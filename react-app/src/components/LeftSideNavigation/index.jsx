@@ -15,6 +15,7 @@ import "./index.css";
 import { useNonClosingModal } from '../../context/NonClosingModal';
 import LogOutModal from '../LogOutModal';
 import { UserDetail } from '../UserDetail';
+import { Message } from '../Message';
 
 export function LeftSideNavigation() {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ export function LeftSideNavigation() {
   const allUsers = useSelector(state => state.users.users);
   const [isOpen, setIsOpen] = useState(false);
   const [isArrowDirection, setIsArrowDirection] = useState('up');
+  const [showMessage, setShowMessage] = useState(false);
 
   const { setModalContent } = useNonClosingModal();
 
@@ -68,9 +70,12 @@ export function LeftSideNavigation() {
           </div> */}
           <div
             className="left-side-nav-coming-soon"
-            onClick={() => alert("Feature coming soon!")}
+            onClick={() => setShowMessage(!showMessage)}
           >
             <img style={{ filter: 'brightness(0) invert(1)' }} src={chat} alt="" /> <p>Messages</p>
+          </div>
+          <div className={`left-side-nav-messages${showMessage ? "" : " hidden"}`}>
+            <Message />
           </div>
 {/*           <div
             className="left-side-nav-coming-soon"
